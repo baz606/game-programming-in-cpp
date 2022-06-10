@@ -22,11 +22,11 @@ bool Game::Initialize()
 
   mWindow = SDL_CreateWindow(
     "Game Programming in C++ (Chapter 1)",
-    100,      // Top left x-coordinate of window
-    100,      // Top left y-coordinate of window
-    1024,     // Width of window
-    768,      // Height of window
-    0       // Flags (0 for no flags set)
+    100,                // Top left x-coordinate of window
+    100,                // Top left y-coordinate of window
+    SCREEN_WIDTH,       // Width of window
+    SCREEN_HEIGHT,      // Height of window
+    0                 // Flags (0 for no flags set)
     );
 
   if (!mWindow)
@@ -35,12 +35,51 @@ bool Game::Initialize()
     return false;
   }
 
+  mRenderer = SDL_CreateRenderer(
+    mWindow,    // Window to create renderer for
+    -1,           // Let SDL decide with graphics driver to use
+    SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+    );
+
+  if (!mRenderer)
+  {
+    SDL_Log("Failed to create renderer: %s", SDL_GetError());
+    return false;
+  }
+
+  // Initialize the border SDL_Rect structs
+  mTopWall = {0, 0, SCREEN_WIDTH, mThickness};
+  mRightWall = {SCREEN_WIDTH - mThickness, 0, mThickness, SCREEN_HEIGHT};
+  mBottomWall = {0, SCREEN_HEIGHT - mThickness, SCREEN_WIDTH, mThickness };
+
+  // Initialize the mBall and mPaddle position vectors
+  mBallPos = { static_cast<float>(SCREEN_WIDTH / 2), static_cast<float>(SCREEN_HEIGHT / 2) };
+  mPaddlePos = { 0, static_cast<float>(SCREEN_HEIGHT / 2) };
+
+  // Initialize the mBall and mPaddle SDL_Rect
+  mBall = {
+    static_cast<int>(mBallPos.x - mThickness / 2),
+    static_cast<int>(mBallPos.y - mThickness / 2),
+    mThickness,
+    mThickness
+  };
+
+  // The y position may look a bit weird but that is just my way of making the mPaddle center with the mBall correctly
+  // Not the best, I admit
+  mPaddle = {
+    static_cast<int>(mPaddlePos.x),
+    static_cast<int>(mPaddlePos.y) - mPaddleHeight + (mThickness * 3),
+    mThickness,
+    mPaddleHeight
+  };
+
   return true;
 }
 
 void Game::Shutdown()
 {
   SDL_DestroyWindow(mWindow);
+  SDL_DestroyRenderer(mRenderer);
   SDL_Quit();
 }
 
@@ -71,7 +110,7 @@ void Game::ProcessInput()
   }
 
   // Get state of keyboard
-  const Uint8* state = SDL_GetKeyboardState(NULL);
+  const Uint8* state = SDL_GetKeyboardState(nullptr);
   // Check if escape key is pressed
   if (state[SDL_SCANCODE_ESCAPE])
   {
@@ -85,4 +124,33 @@ void Game::UpdateGame()
 
 void Game::GenerateOutput()
 {
+  /**
+   * Basic Drawing Setup
+   */
+  SDL_SetRenderDrawColor(
+    mRenderer,
+    0,
+    0,
+    255,
+    255
+    );
+
+  // Clear back buffer to the current draw color
+  SDL_RenderClear(mRenderer);
+
+  SDL_SetRenderDrawColor(
+    mRenderer,
+    255,
+    255,
+    255,
+    255
+    );
+  SDL_RenderFillRect(mRenderer, &mTopWall);
+  SDL_RenderFillRect(mRenderer, &mRightWall);
+  SDL_RenderFillRect(mRenderer, &mBottomWall);
+
+  SDL_RenderFillRect(mRenderer, &mBall);
+  SDL_RenderFillRect(mRenderer, &mPaddle);
+  // Swap front and back buffer
+  SDL_RenderPresent(mRenderer);
 }

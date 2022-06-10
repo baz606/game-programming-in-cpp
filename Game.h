@@ -7,6 +7,12 @@
 
 #include <SDL.h>
 
+struct Vector2
+{
+  float x;
+  float y;
+};
+
 class Game
 {
 public:
@@ -32,8 +38,26 @@ private:
   // Window creates by SDL
   SDL_Window* mWindow;
 
+  // Renderer
+  SDL_Renderer* mRenderer;
+
   // If game should continue run
   bool mIsRunning;
+
+  // Vector position for mPaddle and mBall
+  Vector2 mPaddlePos;
+  Vector2 mBallPos;
+
+  // Borders for our window
+  SDL_Rect mTopWall, mRightWall, mBottomWall;
+
+  // SDL_Rect for our mBall and mPaddle
+  SDL_Rect mBall, mPaddle;
+
+  const int SCREEN_WIDTH = 1024;
+  const int SCREEN_HEIGHT = 768;
+  const int mThickness = 15;
+  const int mPaddleHeight = mThickness * 7;
 };
 
 #endif //LEARN_SDL_GAME_H
