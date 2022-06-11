@@ -54,6 +54,13 @@ private:
   // SDL_Rect for our mBall and mPaddle
   SDL_Rect mBall, mPaddle;
 
+  // Paddle direction
+  int32_t mPaddleDir = 0;
+  float mPaddleSpeed = 300.0f;
+
+  // Keep track of ticks to calculate delta time
+  Uint32 mTicksCount = 0;
+
   const int SCREEN_WIDTH = 1024;
   const int SCREEN_HEIGHT = 768;
   const int mThickness = 15;
