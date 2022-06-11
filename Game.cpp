@@ -57,6 +57,9 @@ bool Game::Initialize()
   mBallPos = { static_cast<float>(SCREEN_WIDTH / 2), static_cast<float>(SCREEN_HEIGHT / 2) };
   mPaddlePos = { 0, static_cast<float>((SCREEN_HEIGHT / 2) - mPaddleHeight) };
 
+  // Initialize ball velocity vector
+  mBallVel = { -200.0f, 235.0f };
+
   return true;
 }
 
@@ -101,6 +104,7 @@ void Game::ProcessInput()
     mIsRunning = false;
   }
 
+  // Check if keys 'W' or 'S' are pressed and upgrade the paddle's direction accordingly
   mPaddleDir = 0;
   if (state[SDL_SCANCODE_W])
   {
@@ -145,6 +149,36 @@ void Game::UpdateGame()
       mPaddlePos.y = static_cast<float>(SCREEN_HEIGHT - mPaddleHeight);
     }
   }
+
+  // Collision with the top wall
+  if (mBallPos.y <= FLOAT(mThickness) && mBallVel.y < 0.0f)
+  {
+    mBallVel.y *= -1;
+  }
+  // Collision with right wall
+  if (mBallPos.x >= FLOAT(SCREEN_WIDTH - mThickness) && mBallVel.x > 0.0f)
+  {
+    mBallVel.x *= -1;
+  }
+  // Collision with the bottom wall
+  if (mBallPos.y >= FLOAT(SCREEN_HEIGHT - mThickness) && mBallVel.y > 0.0f)
+  {
+    mBallVel.y *= -1;
+  }
+
+  // Collision with the paddle
+  if (mBallPos.x <= FLOAT(mPaddlePos.x + mThickness * 2) // check x position
+      && mBallPos.x >= 0.0f // check whether ball has not gone past the right wall
+      && checkYCoordinates() // check y position
+      && mBallVel.x < 0.0f
+      )
+  {
+    mBallVel.x *= -1;
+  }
+
+  // Update ball position based on this velocity
+  mBallPos.x += mBallVel.x * deltaTime * mBallSpeed;
+  mBallPos.y += mBallVel.y * deltaTime * mBallSpeed;
 }
 
 void Game::GenerateOutput()
@@ -196,4 +230,11 @@ void Game::GenerateOutput()
 
   // Swap front and back buffer
   SDL_RenderPresent(mRenderer);
+}
+
+bool Game::checkYCoordinates() const
+{
+   return ((mBallPos.y >= mPaddlePos.y || (mBallPos.y + FLOAT(mThickness)) >= mPaddlePos.y)
+      && (mBallPos.y <= (mPaddlePos.y + FLOAT(mPaddleHeight)) || (mBallPos.y + FLOAT(mThickness)) <= (mPaddlePos.y + FLOAT(mPaddleHeight)))
+      );
 }

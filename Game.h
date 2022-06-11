@@ -8,12 +8,14 @@
 #include <SDL.h>
 
 #define LOG(x) std::cout << x << std::endl
+#define FLOAT(x) static_cast<float>(x)
+#define INT(x) static_cast<int32_t>(x)
 
-struct Vector2
+typedef struct
 {
   float x;
   float y;
-};
+} Vector2;
 
 class Game
 {
@@ -46,9 +48,15 @@ private:
   // If game should continue run
   bool mIsRunning;
 
-  // Vector position for mPaddle and mBall
+  // Vector2 to represent position for mPaddle and mBall
   Vector2 mPaddlePos;
   Vector2 mBallPos;
+
+  // Vector2 to represent velocity for ball
+  Vector2 mBallVel;
+
+  // Ball speed
+  float mBallSpeed = 1.0f;
 
   // Borders for our window
   SDL_Rect mTopWall, mRightWall, mBottomWall;
@@ -67,6 +75,9 @@ private:
   const int SCREEN_HEIGHT = 768;
   const int mThickness = 15;
   const int mPaddleHeight = mThickness * 7;
+
+  // Helper methods
+  bool checkYCoordinates() const;
 };
 
 #endif //LEARN_SDL_GAME_H
