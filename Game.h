@@ -7,6 +7,8 @@
 
 #include <SDL.h>
 
+#define LOG(x) std::cout << x << std::endl
+
 struct Vector2
 {
   float x;

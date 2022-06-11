@@ -5,8 +5,6 @@
 #include <iostream>
 #include "Game.h"
 
-#define LOG(x) std::cout << x << std::endl
-
 Game::Game()
 {
   mWindow = nullptr;
@@ -57,7 +55,7 @@ bool Game::Initialize()
 
   // Initialize the mBall and mPaddle position vectors
   mBallPos = { static_cast<float>(SCREEN_WIDTH / 2), static_cast<float>(SCREEN_HEIGHT / 2) };
-  mPaddlePos = { 0, static_cast<float>(SCREEN_HEIGHT / 2) };
+  mPaddlePos = { 0, static_cast<float>((SCREEN_HEIGHT / 2) - mPaddleHeight) };
 
   return true;
 }
@@ -137,14 +135,14 @@ void Game::UpdateGame()
   if (mPaddleDir != 0)
   {
     mPaddlePos.y += static_cast<float>(mPaddleDir) * mPaddleSpeed * deltaTime;
-    // Make sure paddle doesn't move off screen
-    if (mPaddlePos.y < (mPaddleHeight/2.0f + mThickness))
+    // Make sure paddle doesn't move off the screen
+    if (mPaddlePos.y < 0.0f)
     {
-      mPaddlePos.y = mPaddleHeight/2.0f + mThickness;
+      mPaddlePos.y = 0.0f;
     }
-    else if (mPaddlePos.y > (SCREEN_HEIGHT - mPaddleHeight/2.0f - mThickness))
+    else if (mPaddlePos.y > static_cast<float>(SCREEN_HEIGHT - mPaddleHeight))
     {
-      mPaddlePos.y = SCREEN_HEIGHT - mPaddleHeight/2.0f - mThickness;
+      mPaddlePos.y = static_cast<float>(SCREEN_HEIGHT - mPaddleHeight);
     }
   }
 }
@@ -174,8 +172,9 @@ void Game::GenerateOutput()
     );
 
   //SDL_RenderFillRect(mRenderer, &mTopWall);
-  SDL_RenderFillRect(mRenderer, &mRightWall);
-  SDL_RenderFillRect(mRenderer, &mBottomWall);
+  //SDL_RenderFillRect(mRenderer, &mRightWall);
+  //SDL_RenderFillRect(mRenderer, &mBottomWall);
+  // Update mBall Rect position and graphics
 
   mBall = {
     static_cast<int>(mBallPos.x - mThickness / 2),
@@ -185,16 +184,15 @@ void Game::GenerateOutput()
   };
   SDL_RenderFillRect(mRenderer, &mBall);
 
-  // The y position may look a bit weird but that is just my attempt of making the mPaddle center with the mBall
-  // at the start of the game. I admit this is not the best attempt
+  // Update mPaddle Rect position and graphics
   mPaddle = {
     static_cast<int>(mPaddlePos.x),
-    static_cast<int>(mPaddlePos.y) - mPaddleHeight + (mThickness * 3),
+    static_cast<int>(mPaddlePos.y),
     mThickness,
     mPaddleHeight
   };
   SDL_RenderFillRect(mRenderer, &mPaddle);
-  LOG("x: " << mPaddle.x << "y: " << mPaddle.y);
+  //LOG("x: " << mPaddle.x << "y: " << mPaddle.y);
 
   // Swap front and back buffer
   SDL_RenderPresent(mRenderer);
