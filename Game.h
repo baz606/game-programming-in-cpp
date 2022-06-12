@@ -7,9 +7,7 @@
 
 #include <SDL.h>
 
-#define LOG(x) std::cout << x << std::endl
 #define FLOAT(x) static_cast<float>(x)
-#define INT(x) static_cast<int32_t>(x)
 
 typedef struct
 {
