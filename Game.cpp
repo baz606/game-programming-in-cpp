@@ -167,10 +167,10 @@ void Game::UpdateGame()
   }
 
   // Collision with the paddle
-  if (mBallPos.x <= FLOAT(mPaddlePos.x + mThickness * 2) // check x position
+  if (mBallPos.x <= FLOAT(mPaddlePos.x + mThickness * 2) // check whether we are touching the paddle with the ball's x-coordinates
       && mBallPos.x >= 0.0f // check whether ball has not gone past the right wall
-      && checkYCoordinates() // check y position
-      && mBallVel.x < 0.0f
+      && checkYCoordinates() // check whether we are touching the paddle with the ball's y-coordinates
+      && mBallVel.x < 0.0f // check ball's x-velocity is negative to make the collision correct
       )
   {
     mBallVel.x *= -1;
@@ -232,6 +232,11 @@ void Game::GenerateOutput()
   SDL_RenderPresent(mRenderer);
 }
 
+/**
+ * Check whether the left top part and left bottom part of the ball's y-coordinates are at least touching the paddle's
+ * top right and bottom right y-coordinates
+ * @return true if above description is true
+ */
 bool Game::checkYCoordinates() const
 {
    return ((mBallPos.y >= mPaddlePos.y || (mBallPos.y + FLOAT(mThickness)) >= mPaddlePos.y)
