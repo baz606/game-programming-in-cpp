@@ -1,4 +1,4 @@
 # Game programming in C++
-A very simple pong game in C++ using SDL
+This repository contains my progress from Game Programming in C++ from Sanjay Madhav's book
 
-The project's code comes from me learning SDL from the book Game Programming in C++ from Sanjay Madhav (Chapter 1)
+The chapter codes are in separate branches. Each chapter builds upon the previous chapter's code
