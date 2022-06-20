@@ -30,6 +30,8 @@
 
 # Cmake
 cmake-build-debug/
+build/
+SDL/
 
 # User-specific stuff:
 .idea/
