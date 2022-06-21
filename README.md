@@ -1,4 +1,5 @@
-# simple-pong
-A very simple pong game in C++ using SDL
+# Game programming in C++ using SDL
+Learning game programming in C++ using SDL from Game Programming in C++ from Sanjay Madhav's book</br>
+The chapter codes are in separate branches. Each chapter builds upon the previous chapter's code.</br>
 
-The project's code comes from me learning SDL from the book Game Programming in C++ from Sanjay Madhav (Chapter 1)
+Build instructions are also in branches for the chapters
