@@ -28,7 +28,7 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <SDL.h>
+#include "SDL.h"
 #include "Game.h"
 
 int main(int argc, char * args[])

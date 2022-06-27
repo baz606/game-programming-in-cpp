@@ -35,7 +35,7 @@
 #ifndef LEARN_SDL_GAME_H
 #define LEARN_SDL_GAME_H
 
-#include <SDL.h>
+#include "SDL.h"
 
 #define FLOAT(x) static_cast<float>(x)
 
