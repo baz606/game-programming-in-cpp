@@ -8,21 +8,17 @@ Use the following statements and instructions to correctly compile and run this 
 assuming building on other platforms will be similar as long as you have cmake installed. I used CLion to compile and 
 run this project, but you can also use _cmake_ and _visual studio_ to do the same.</br>
 
-First, we build the SDL library, if you don't have it already setup on your computer:
-1) `git clone --recursive git@github.com:baz606/game-programming-in-cpp.git`
-2) `cd SDL && mkdir build`
-3) `cd build && cmake.exe ..`
-4) Open **SDL2.sln** in visual studio. I used visual studio 2019
-5) Change build to **Release**
-6) Select _Build_ > _Build solution_. This will generate **SDL2.dll** under SDL/build/Release. We will add
-   this dll later once we compile and link the source code of this branch.
+1) Clone this repo using: `git clone git@github.com:baz606/game-programming-in-cpp.git`
+2) _Extract here_ the **SDL** library in **resources** directory. You can also build SDL on your own or grab a binary
+   that suits your operating system from the SDL website: https://www.libsdl.org/download-2.0.php
 
 ### Next, lets build the game:
-7) `cd` back to root directory of this project
-8) `mkdir build && cd build && cmake.exe ..`
-9) Open **chapter-1.sln** in visual studio. I used visual studio 2019
-10) Change build to **Release**
-11) Now, copy **SDL2.dll** from **step 6** SDL/build/Release directory to wherever your .exe file is generated when you 
-    compile this branch's code. I used CLion to compile and run my program, so I had to copy the SDL2.dll to
-    _cmake-build-debug_ directory
-12) Run the .exe file and enjoy!
+3) Go back to root directory of this project
+4) Run `mkdir build && cd build && cmake.exe ..`
+5) Open **chapter-1.sln** in visual studio. I used visual studio 2019
+6) Change build to **Release**
+7) Alternatively, you can automatically use CLion to compile and run the code using CMakeLists.txt file.
+8) Now, copy **SDL2.dll** from **./resources/lib/x64** directory to wherever your .exe file is generated when you 
+   compile this branch's code. I used CLion to compile and run my program, so I had to copy the SDL2.dll to
+   _cmake-build-debug_ directory
+9) Run the .exe file and enjoy!
