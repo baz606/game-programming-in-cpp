@@ -32,75 +32,68 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LEARD_SDL_CHAPTER_2_GAME_H
-#define LEARD_SDL_CHAPTER_2_GAME_H
+#ifndef LEARD_SDL_CHAPTER_2_ACTOR_H
+#define LEARD_SDL_CHAPTER_2_ACTOR_H
 
-#include "SDL.h"
 #include <vector>
-#include <cstdint>
-#include <string>
-#include <unordered_map>
+#include "Game.h"
+#include "Math.h"
 
-#define FLOAT(x) static_cast<float>(x)
-
-class Game
+class Actor
 {
 public:
-  // Constructor
-  Game();
 
-  // Initialize the game
-  bool Initialize();
+  enum State
+  {
+    EActive, EPaused, EDead
+  };
 
-  // Runs the game loop until the game is over
-  void RunLoop();
+  // Constructor/destructor
+  Actor(class Game* game);
+  virtual ~Actor();
 
-  // Shutdown the game
-  void Shutdown();
+  // Update function called from Game (not overridable)
+  void Update(float deltaTime);
 
-  SDL_Texture* GetTexture(const std::string &fileName);
+  // Updates all the components attached to the actor (not overridable)
+  void UpdateComponents(float deltaTime);
 
-  // Actors and pending actors to be updated in the game loop
-  // Pending actors are actors that are created during game loop execution
-  void AddActor(class Actor* actor);
-  void RemoveActor(class Actor* actor);
+  // Any actor-specific update code (overridable)
+  virtual void UpdateActor(float deltaTime);
 
-  void AddSprite(class SpriteComponent* sprite);
-  void RemoveSprite(class SpriteComponent* sprite);
+  // Getters/Setters
+  // Position
+  void SetPosition(Vector2* position) { mPosition = (*position); }
+  const Vector2* GetPosition() const { return &mPosition; }
+  // Scale
+  void SetScale(float scale) { mScale = scale; }
+  float GetScale() const { return mScale; }
+  // Rotation
+  void SetRoation(float rotation) { mRotation = rotation; }
+  float GetRotation() const { return mRotation; }
+  // State
+  void SetState(State state);
+  State GetState() const;
+  // Game
+  Game* GetGame() const { return mGame; }
 
-  // Getter and Setters
-  void SetUpdatingActors(bool value);
-  bool GetUpdatingActors() const;
-
-  SDL_Renderer* GetRenderer() const { return mRenderer; }
+  // Add/remove components
+  void AddComponent (class Component* component);
+  void RemoveComponent (class Component* component);
 
 private:
-  // Helper functions for the game loop
-  void ProcessInput();
-  void UpdateGame();
-  void GenerateOutput();
+  // Actor's state
+  State mState;
 
-  std::vector<class Actor*> mActors;
-  std::vector<class Actor*> mPendingActors;
+  // Transform
+  Vector2 mPosition;    // Center position of actor
+  float mScale;         // Uniforms scale of actor (1.0f for 100%)
+  float mRotation;      // Rotation angle (in radians)
 
-  std::vector<class SpriteComponent*> mSprites;
-
-  // Track if we are updating actors right now
-  bool mUpdatingActors;
-
-  // Keep track of ticks
-  uint32_t mTicksCount;
-
-  SDL_Window* mWindow;
-  SDL_Renderer* mRenderer;
-
-  bool mIsRunning;
-  const int SCREEN_WIDTH = 1024;
-  const int SCREEN_HEIGHT = 768;
-
-  // Map of textures loaded
-  std::unordered_map<std::string, SDL_Texture*> mTextures;
+  // Components held by this actor
+  std::vector<class Component*> mComponents;
+  Game* mGame;
 };
 
 
-#endif //LEARD_SDL_CHAPTER_2_GAME_H
+#endif //LEARD_SDL_CHAPTER_2_ACTOR_H

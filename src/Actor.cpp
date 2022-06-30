@@ -32,75 +32,70 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LEARD_SDL_CHAPTER_2_GAME_H
-#define LEARD_SDL_CHAPTER_2_GAME_H
+#include "Actor.h"
+#include "Game.h"
+#include "Component.h"
+#include <algorithm>
 
-#include "SDL.h"
-#include <vector>
-#include <cstdint>
-#include <string>
-#include <unordered_map>
-
-#define FLOAT(x) static_cast<float>(x)
-
-class Game
+void Actor::Update(float deltaTime)
 {
-public:
-  // Constructor
-  Game();
 
-  // Initialize the game
-  bool Initialize();
+}
 
-  // Runs the game loop until the game is over
-  void RunLoop();
+Actor::State Actor::GetState() const
+{
+  return mState;
+}
 
-  // Shutdown the game
-  void Shutdown();
+void Actor::SetState(Actor::State state)
+{
+  mState = state;
+}
 
-  SDL_Texture* GetTexture(const std::string &fileName);
+Actor::~Actor()
+{
+  mGame->RemoveActor(this);
 
-  // Actors and pending actors to be updated in the game loop
-  // Pending actors are actors that are created during game loop execution
-  void AddActor(class Actor* actor);
-  void RemoveActor(class Actor* actor);
+  // Need to delete components
+  // Because ~Component calls RemoveComponent, we need a different style loop
+  while (!mComponents.empty())
+  {
+    delete mComponents.back();
+  }
+}
 
-  void AddSprite(class SpriteComponent* sprite);
-  void RemoveSprite(class SpriteComponent* sprite);
+Actor::Actor(Game *game)
+{
+  mGame = game;
+}
 
-  // Getter and Setters
-  void SetUpdatingActors(bool value);
-  bool GetUpdatingActors() const;
+void Actor::UpdateActor(float deltaTime)
+{
 
-  SDL_Renderer* GetRenderer() const { return mRenderer; }
+}
 
-private:
-  // Helper functions for the game loop
-  void ProcessInput();
-  void UpdateGame();
-  void GenerateOutput();
+void Actor::AddComponent(Component *component)
+{
+  // Find the insertion point in the sorted vector
+  // (The first element with an order higher than me)
+  int myOrder = component->GetUpdateOrder();
+  auto iter = mComponents.begin();
+  for (; iter != mComponents.end(); iter++)
+  {
+    if (myOrder < (*iter)->GetUpdateOrder())
+    {
+      break;
+    }
+  }
+  // Inserts the element before position of iterator
+  mComponents.insert(iter, component);
+}
 
-  std::vector<class Actor*> mActors;
-  std::vector<class Actor*> mPendingActors;
-
-  std::vector<class SpriteComponent*> mSprites;
-
-  // Track if we are updating actors right now
-  bool mUpdatingActors;
-
-  // Keep track of ticks
-  uint32_t mTicksCount;
-
-  SDL_Window* mWindow;
-  SDL_Renderer* mRenderer;
-
-  bool mIsRunning;
-  const int SCREEN_WIDTH = 1024;
-  const int SCREEN_HEIGHT = 768;
-
-  // Map of textures loaded
-  std::unordered_map<std::string, SDL_Texture*> mTextures;
-};
-
-
-#endif //LEARD_SDL_CHAPTER_2_GAME_H
+void Actor::RemoveComponent(Component *component)
+{
+  auto iter = std::find(mComponents.begin(), mComponents.end(), component);
+  if (iter != mComponents.end())
+  {
+    mComponents.erase(iter);
+  }
+}

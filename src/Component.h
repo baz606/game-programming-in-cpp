@@ -32,75 +32,29 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LEARD_SDL_CHAPTER_2_GAME_H
-#define LEARD_SDL_CHAPTER_2_GAME_H
+#ifndef LEARD_SDL_CHAPTER_2_COMPONENT_H
+#define LEARD_SDL_CHAPTER_2_COMPONENT_H
 
-#include "SDL.h"
-#include <vector>
-#include <cstdint>
-#include <string>
-#include <unordered_map>
-
-#define FLOAT(x) static_cast<float>(x)
-
-class Game
+class Component
 {
 public:
   // Constructor
-  Game();
+  // (the lower the update order, the earlier the component updates)
+  Component(class Actor* owner, int updateOrder = 100);
+  // Destructor
+  virtual ~Component();
 
-  // Initialize the game
-  bool Initialize();
+  // Update this component by delta time
+  virtual void Update(float deltaTime);
+  int GetUpdateOrder() const { return mUpdateOrder; }
 
-  // Runs the game loop until the game is over
-  void RunLoop();
+protected:
+  // Owning actor
+  class Actor* mOwner;
 
-  // Shutdown the game
-  void Shutdown();
-
-  SDL_Texture* GetTexture(const std::string &fileName);
-
-  // Actors and pending actors to be updated in the game loop
-  // Pending actors are actors that are created during game loop execution
-  void AddActor(class Actor* actor);
-  void RemoveActor(class Actor* actor);
-
-  void AddSprite(class SpriteComponent* sprite);
-  void RemoveSprite(class SpriteComponent* sprite);
-
-  // Getter and Setters
-  void SetUpdatingActors(bool value);
-  bool GetUpdatingActors() const;
-
-  SDL_Renderer* GetRenderer() const { return mRenderer; }
-
-private:
-  // Helper functions for the game loop
-  void ProcessInput();
-  void UpdateGame();
-  void GenerateOutput();
-
-  std::vector<class Actor*> mActors;
-  std::vector<class Actor*> mPendingActors;
-
-  std::vector<class SpriteComponent*> mSprites;
-
-  // Track if we are updating actors right now
-  bool mUpdatingActors;
-
-  // Keep track of ticks
-  uint32_t mTicksCount;
-
-  SDL_Window* mWindow;
-  SDL_Renderer* mRenderer;
-
-  bool mIsRunning;
-  const int SCREEN_WIDTH = 1024;
-  const int SCREEN_HEIGHT = 768;
-
-  // Map of textures loaded
-  std::unordered_map<std::string, SDL_Texture*> mTextures;
+  // Update order of component
+  int mUpdateOrder;
 };
 
 
-#endif //LEARD_SDL_CHAPTER_2_GAME_H
+#endif //LEARD_SDL_CHAPTER_2_COMPONENT_H

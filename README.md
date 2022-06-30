@@ -9,16 +9,18 @@ assuming building on other platforms will be similar as long as you have cmake i
 run this project, but you can also use _cmake_ and _visual studio_ to do the same.</br>
 
 1) Clone this repo using: `git clone git@github.com:baz606/game-programming-in-cpp.git`
-2) _Extract here_ the **SDL** library in **resources** directory. You can also build SDL on your own or grab a binary
-   that suits your operating system from the SDL website: https://www.libsdl.org/download-2.0.php
+2) _Extract to "SDL2..."_ the **SDL** library in **resources** directory. You can also build SDL on your own or grab a 
+   binary that suits your operating system from the SDL website: https://www.libsdl.org/download-2.0.php
+3) Repeat step 2 for SDL2_image library in resources directory.
 
 ### Next, lets build the game:
-3) Go back to root directory of this project
-4) Run `mkdir build && cd build && cmake.exe ..`
-5) Open **chapter-1.sln** in visual studio. I used visual studio 2019
-6) Change build to **Release**
-7) Alternatively, you can automatically use CLion to compile and run the code using CMakeLists.txt file.
-8) Now, copy **SDL2.dll** from **./resources/lib/x64** directory to wherever your .exe file is generated when you 
-   compile this branch's code. I used CLion to compile and run my program, so I had to copy the SDL2.dll to
+4) Go back to root directory of this project
+5) Run `mkdir build && cd build && cmake.exe ..`
+6) Open **chapter-1.sln** in visual studio. I used visual studio 2019
+7) Change build to **Release**
+8) Now, copy **SDL2.dll** from **./resources/SDL2-2.0.22/lib/x64** directory and **SDL2_image.dll** from
+   **./resources/SDL2_image-2.0.5/lib/x64** directory to wherever your .exe file is generated when you compile this
+   branch's code. I used CLion to compile and run my program, so I had to copy the SDL2.dll and SDL2_image.dll to 
    _cmake-build-debug_ directory
-9) Run the .exe file and enjoy!
+9) Alternatively, you can automatically use CLion to compile and run the code using CMakeLists.txt file.
+10) Run the .exe file and enjoy!

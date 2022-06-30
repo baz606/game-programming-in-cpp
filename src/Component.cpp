@@ -32,75 +32,22 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LEARD_SDL_CHAPTER_2_GAME_H
-#define LEARD_SDL_CHAPTER_2_GAME_H
+#include "Component.h"
+#include "Actor.h"
 
-#include "SDL.h"
-#include <vector>
-#include <cstdint>
-#include <string>
-#include <unordered_map>
-
-#define FLOAT(x) static_cast<float>(x)
-
-class Game
+Component::Component(Actor *owner, int updateOrder)
+  :mOwner(owner)
+  ,mUpdateOrder(updateOrder)
 {
-public:
-  // Constructor
-  Game();
+  // Add to actor's vector of components
+  mOwner->AddComponent(this);
+}
 
-  // Initialize the game
-  bool Initialize();
+Component::~Component()
+{
+  mOwner->RemoveComponent(this);
+}
 
-  // Runs the game loop until the game is over
-  void RunLoop();
-
-  // Shutdown the game
-  void Shutdown();
-
-  SDL_Texture* GetTexture(const std::string &fileName);
-
-  // Actors and pending actors to be updated in the game loop
-  // Pending actors are actors that are created during game loop execution
-  void AddActor(class Actor* actor);
-  void RemoveActor(class Actor* actor);
-
-  void AddSprite(class SpriteComponent* sprite);
-  void RemoveSprite(class SpriteComponent* sprite);
-
-  // Getter and Setters
-  void SetUpdatingActors(bool value);
-  bool GetUpdatingActors() const;
-
-  SDL_Renderer* GetRenderer() const { return mRenderer; }
-
-private:
-  // Helper functions for the game loop
-  void ProcessInput();
-  void UpdateGame();
-  void GenerateOutput();
-
-  std::vector<class Actor*> mActors;
-  std::vector<class Actor*> mPendingActors;
-
-  std::vector<class SpriteComponent*> mSprites;
-
-  // Track if we are updating actors right now
-  bool mUpdatingActors;
-
-  // Keep track of ticks
-  uint32_t mTicksCount;
-
-  SDL_Window* mWindow;
-  SDL_Renderer* mRenderer;
-
-  bool mIsRunning;
-  const int SCREEN_WIDTH = 1024;
-  const int SCREEN_HEIGHT = 768;
-
-  // Map of textures loaded
-  std::unordered_map<std::string, SDL_Texture*> mTextures;
-};
-
-
-#endif //LEARD_SDL_CHAPTER_2_GAME_H
+void Component::Update(float deltaTime)
+{
+}
