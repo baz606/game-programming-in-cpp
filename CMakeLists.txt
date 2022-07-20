@@ -3,8 +3,8 @@ project(chapter-1)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SDL2_INCLUDE_DIR ./resources/include)
-set(SDL2_LIB_DIR ./resources/lib/x64)
+set(SDL2_INCLUDE_DIR ./resources/SDL2-2.0.22/include)
+set(SDL2_LIB_DIR ./resources/SDL2-2.0.22/lib/x64)
 
 include_directories(${SDL2_INCLUDE_DIR})
 link_directories(${SDL2_LIB_DIR})
