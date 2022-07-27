@@ -48,6 +48,7 @@ void BGSpriteComponent::Update(float deltaTime)
     // Update the x offset
     bg.mOffset.x += mScrollSpeed * deltaTime;
     // If this is completely off the screen, reset the offset to the right of the last bg texture
+    // mScreenSize.z - 1 is because the screen coordinates start at 0,0
     if (bg.mOffset.x < -mScreenSize.x)
     {
       bg.mOffset.x = (mBGTextures.size() - 1) * mScreenSize.x - 1;

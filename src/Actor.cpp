@@ -71,7 +71,6 @@ Actor::Actor(Game *game)
 
 void Actor::UpdateActor(float deltaTime)
 {
-
 }
 
 void Actor::AddComponent(Component *component)
