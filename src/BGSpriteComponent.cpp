@@ -66,8 +66,8 @@ void BGSpriteComponent::Draw(SDL_Renderer *renderer)
     r.w = static_cast<int>(mScreenSize.x);
     r.h = static_cast<int>(mScreenSize.y);
     // Center the rectangle around the position of the owner
-    r.x = static_cast<int>(mOwner->GetPosition()->x - r.w / 2 + bg.mOffset.x);
-    r.y = static_cast<int>(mOwner->GetPosition()->y - r.h / 2 + bg.mOffset.y);
+    r.x = static_cast<int>(mOwner->GetPosition().x - r.w / 2 + bg.mOffset.x);
+    r.y = static_cast<int>(mOwner->GetPosition().y - r.h / 2 + bg.mOffset.y);
 
     // Draw this background
     SDL_RenderCopy(

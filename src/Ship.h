@@ -1,5 +1,5 @@
 //
-// Created by baz606 on 6/14/2022.
+// Created by baz606 on 7/28/2022.
 //
 
 /**
@@ -30,53 +30,26 @@
   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
-#include "SpriteComponent.h"
+#ifndef CHAPTER_2_SHIP_H
+#define CHAPTER_2_SHIP_H
+
 #include "Actor.h"
 
-SpriteComponent::SpriteComponent(Actor *owner, int drawOrder)
-  : Component(owner)
-  ,mTexture(nullptr)
-  ,mDrawOrder(drawOrder)
-  ,mTextureWidth(0)
-  ,mTextureHeight(0)
+class Ship : public Actor
 {
-  mOwner->GetGame()->AddSprite(this);
-}
+public:
+  Ship(class Game* game);
+  void UpdateActor(float deltaTime) override;
+  void ProcessKeyboard(const uint8_t* state);
+  float GetRightSpeed() const { return mRightSpeed; }
+  float GetDownSpeed() const { return mDownSpeed; }
 
-void SpriteComponent::Draw(SDL_Renderer *renderer)
-{
-  if (mTexture)
-  {
-    SDL_Rect r;
-    // Scale the width/height by owner's scale
-    r.w = static_cast<int>(mTextureWidth * mOwner->GetScale());
-    r.h = static_cast<int>(mTextureHeight * mOwner->GetScale());
-    r.x = static_cast<int>(mOwner->GetPosition().x - r.w / 2);
-    r.y = static_cast<int>(mOwner->GetPosition().y - r.h / 2);
+private:
+  float mRightSpeed;
+  float mDownSpeed;
+};
 
-    // Draw
-    SDL_RenderCopyEx(
-        renderer,
-        mTexture, // Texture to draw
-        nullptr,  // Source rectangle
-        &r, // Destination rectangle
-        -Math::ToDegrees(mOwner->GetRotation()), // Convert angle
-        nullptr,  // Point of rotation
-        SDL_FLIP_NONE // Flip behavior
-      );
-  }
-}
 
-void SpriteComponent::SetTexture(SDL_Texture *texture)
-{
-  mTexture = texture;
-  // Get width and height of the texture
-  SDL_QueryTexture(texture, nullptr, nullptr, &mTextureWidth, &mTextureHeight);
-}
-
-SpriteComponent::~SpriteComponent()
-{
-  mOwner->GetGame()->RemoveSprite(this);
-}
+#endif //CHAPTER_2_SHIP_H

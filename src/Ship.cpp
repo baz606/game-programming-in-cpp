@@ -1,5 +1,5 @@
 //
-// Created by baz606 on 6/14/2022.
+// Created by baz606 on 7/28/2022.
 //
 
 /**
@@ -30,53 +30,63 @@
   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
-#include "SpriteComponent.h"
-#include "Actor.h"
+#include "Ship.h"
+#include "AnimSpriteComponent.h"
+#include "Game.h"
 
-SpriteComponent::SpriteComponent(Actor *owner, int drawOrder)
-  : Component(owner)
-  ,mTexture(nullptr)
-  ,mDrawOrder(drawOrder)
-  ,mTextureWidth(0)
-  ,mTextureHeight(0)
+Ship::Ship(Game *game)
+  :Actor(game)
+  ,mRightSpeed(0.0f)
+  ,mDownSpeed(0.0f)
 {
-  mOwner->GetGame()->AddSprite(this);
+  // Create an animated sprite component
+  AnimSpriteComponent* asc = new AnimSpriteComponent(this);
+  std::vector<SDL_Texture*> anims = {
+    game->GetTexture("Assets/Ship.01png"),
+    game->GetTexture("Assets/Ship.02png"),
+    game->GetTexture("Assets/Ship.03png"),
+    game->GetTexture("Assets/Ship.04png")
+  };
+  asc->SetAnimTextures(anims);
 }
 
-void SpriteComponent::Draw(SDL_Renderer *renderer)
+
+void Ship::UpdateActor(float deltaTime)
 {
-  if (mTexture)
+  Actor::UpdateActor(deltaTime);
+
+  /**
+   * We return a const reference and use it to initialize pos. The value held by the reference is copied to pos.
+   * I am assuming this is because we do not directly change the mPosition return by Vector2 from GetPosition() method.
+   */
+  Vector2 pos = GetPosition();
+
+  // Update position based on speeds and delta time
+  pos.x += mRightSpeed * deltaTime;
+  pos.y += mDownSpeed * deltaTime;
+
+  // Restrict position to left half of screen
+  if (pos.x < 25.0f)
   {
-    SDL_Rect r;
-    // Scale the width/height by owner's scale
-    r.w = static_cast<int>(mTextureWidth * mOwner->GetScale());
-    r.h = static_cast<int>(mTextureHeight * mOwner->GetScale());
-    r.x = static_cast<int>(mOwner->GetPosition().x - r.w / 2);
-    r.y = static_cast<int>(mOwner->GetPosition().y - r.h / 2);
-
-    // Draw
-    SDL_RenderCopyEx(
-        renderer,
-        mTexture, // Texture to draw
-        nullptr,  // Source rectangle
-        &r, // Destination rectangle
-        -Math::ToDegrees(mOwner->GetRotation()), // Convert angle
-        nullptr,  // Point of rotation
-        SDL_FLIP_NONE // Flip behavior
-      );
+    pos.x = 25.0f;
   }
-}
-
-void SpriteComponent::SetTexture(SDL_Texture *texture)
-{
-  mTexture = texture;
-  // Get width and height of the texture
-  SDL_QueryTexture(texture, nullptr, nullptr, &mTextureWidth, &mTextureHeight);
-}
-
-SpriteComponent::~SpriteComponent()
-{
-  mOwner->GetGame()->RemoveSprite(this);
+  else if (pos.x > 500.0f)
+  {
+    pos.x = 500.0f;
+  }
+  if (pos.y < 25.0f)
+  {
+    pos.y = 25.0f;
+  }
+  else if (pos.y > 743.0f)
+  {
+    pos.y = 743.0f;
+  }
+  /**
+   * Here we pass pos as a reference to SetPosition() method. The Vector2 pos is passed as reference but the value it
+   * holds gets copied over to mPosition Vector2 object.
+   */
+  SetPosition(pos);
 }
