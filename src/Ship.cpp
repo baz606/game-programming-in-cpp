@@ -90,3 +90,28 @@ void Ship::UpdateActor(float deltaTime)
    */
   SetPosition(pos);
 }
+
+void Ship::ProcessKeyboard(const uint8_t *state)
+{
+  mRightSpeed = 0.0f;
+  mDownSpeed = 0.0f;
+
+  // right/left
+  if (state[SDL_SCANCODE_D])
+  {
+    mRightSpeed += 250.0f;
+  }
+  if (state[SDL_SCANCODE_A])
+  {
+    mRightSpeed -= 250.0f;
+  }
+  // up/down
+  if (state[SDL_SCANCODE_S])
+  {
+    mDownSpeed += 300.0f;
+  }
+  if (state[SDL_SCANCODE_W])
+  {
+    mDownSpeed -= 300.0f;
+  }
+}

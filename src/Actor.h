@@ -69,11 +69,11 @@ public:
   void SetScale(float scale) { mScale = scale; }
   float GetScale() const { return mScale; }
   // Rotation
-  void SetRoation(float rotation) { mRotation = rotation; }
+  void SetRotation(float rotation) { mRotation = rotation; }
   float GetRotation() const { return mRotation; }
   // State
-  void SetState(State state);
-  State GetState() const;
+  void SetState(State state) { mState = state; }
+  State GetState() const { return mState; }
   // Game
   Game* GetGame() const { return mGame; }
 

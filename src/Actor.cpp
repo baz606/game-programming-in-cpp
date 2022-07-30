@@ -37,19 +37,14 @@
 #include "Component.h"
 #include <algorithm>
 
-void Actor::Update(float deltaTime)
+Actor::Actor(Game *game)
+  :mState(EActive)
+  ,mPosition(Vector2::Zero)
+  ,mScale(1.0f)
+  ,mRotation(0.0f)
+  ,mGame(game)
 {
-
-}
-
-Actor::State Actor::GetState() const
-{
-  return mState;
-}
-
-void Actor::SetState(Actor::State state)
-{
-  mState = state;
+  mGame->AddActor(this);
 }
 
 Actor::~Actor()
@@ -64,9 +59,21 @@ Actor::~Actor()
   }
 }
 
-Actor::Actor(Game *game)
+void Actor::Update(float deltaTime)
 {
-  mGame = game;
+  if (mState == EActive)
+  {
+    UpdateComponents(deltaTime);
+    UpdateActor(deltaTime);
+  }
+}
+
+void Actor::UpdateComponents(float deltaTime)
+{
+  for (auto comp : mComponents)
+  {
+    comp->Update(deltaTime);
+  }
 }
 
 void Actor::UpdateActor(float deltaTime)

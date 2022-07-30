@@ -73,6 +73,8 @@ public:
   {
     return Vector2(a.x + b.x, a.y + b.y);
   }
+
+  static const Vector2 Zero;
 };
 
 
