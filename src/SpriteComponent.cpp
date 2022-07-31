@@ -36,13 +36,18 @@
 #include "Actor.h"
 
 SpriteComponent::SpriteComponent(Actor *owner, int drawOrder)
-  : Component(owner)
+  :Component(owner)
   ,mTexture(nullptr)
   ,mDrawOrder(drawOrder)
   ,mTextureWidth(0)
   ,mTextureHeight(0)
 {
   mOwner->GetGame()->AddSprite(this);
+}
+
+SpriteComponent::~SpriteComponent()
+{
+  mOwner->GetGame()->RemoveSprite(this);
 }
 
 void SpriteComponent::Draw(SDL_Renderer *renderer)
@@ -74,9 +79,4 @@ void SpriteComponent::SetTexture(SDL_Texture *texture)
   mTexture = texture;
   // Get width and height of the texture
   SDL_QueryTexture(texture, nullptr, nullptr, &mTextureWidth, &mTextureHeight);
-}
-
-SpriteComponent::~SpriteComponent()
-{
-  mOwner->GetGame()->RemoveSprite(this);
 }

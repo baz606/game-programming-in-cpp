@@ -44,12 +44,13 @@ Ship::Ship(Game *game)
   // Create an animated sprite component
   AnimSpriteComponent* asc = new AnimSpriteComponent(this);
   std::vector<SDL_Texture*> anims = {
-    game->GetTexture("Assets/Ship.01png"),
-    game->GetTexture("Assets/Ship.02png"),
-    game->GetTexture("Assets/Ship.03png"),
-    game->GetTexture("Assets/Ship.04png")
+    game->GetTexture("../src/Assets/Ship01.png"),
+    game->GetTexture("../src/Assets/Ship02.png"),
+    game->GetTexture("../src/Assets/Ship03.png"),
+    game->GetTexture("../src/Assets/Ship04.png")
   };
   asc->SetAnimTextures(anims);
+  asc->SetAnimFPS(15);
 }
 
 

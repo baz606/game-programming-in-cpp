@@ -79,8 +79,12 @@ private:
   void ProcessInput();
   void UpdateGame();
   void GenerateOutput();
+  void LoadData();
+  void UnloadData();
 
+  // All the actors in the game
   std::vector<class Actor*> mActors;
+  // Any pending actors
   std::vector<class Actor*> mPendingActors;
 
   std::vector<class SpriteComponent*> mSprites;
@@ -100,6 +104,9 @@ private:
 
   // Map of textures loaded
   std::unordered_map<std::string, SDL_Texture*> mTextures;
+
+  // Game-specific
+  class Ship* mShip; // Player's ship
 };
 
 

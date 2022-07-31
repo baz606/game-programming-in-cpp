@@ -63,7 +63,7 @@ public:
 
   // Getters/Setters
   // Position
-  void SetPosition(Vector2& position) { mPosition = position; }
+  void SetPosition(const Vector2& position) { mPosition = position; }
   const Vector2& GetPosition() { return mPosition; }
   // Scale
   void SetScale(float scale) { mScale = scale; }

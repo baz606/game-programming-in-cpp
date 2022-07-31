@@ -52,6 +52,8 @@ public:
 
   // Get/Set screen size and scroll speed
   void SetScreenSize(const Vector2& size) { mScreenSize = size; }
+  void SetScrollSpeed(float speed) { mScrollSpeed = speed; }
+  float GetScrollSpeed() const { return mScrollSpeed; }
 
 private:
   // Struct to encapsulate each BG image and its offset

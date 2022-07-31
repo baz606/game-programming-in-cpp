@@ -44,7 +44,7 @@ class SpriteComponent : public Component
 {
 public:
   // Lower draw order corresponds with further back or corresponds with the sprite being drawn earlier
-  SpriteComponent(Actor *owner, int drawOrder);
+  SpriteComponent(Actor *owner, int drawOrder = 100);
   ~SpriteComponent();
 
   virtual void Draw(SDL_Renderer* renderer);

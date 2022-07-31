@@ -36,18 +36,22 @@
 #include "Game.h"
 #include "Actor.h"
 #include "SpriteComponent.h"
+#include "Ship.h"
+#include "BGSpriteComponent.h"
 
 #include <algorithm>
 
 Game::Game()
+  :mWindow(nullptr)
+  ,mRenderer(nullptr)
+  ,mIsRunning(true)
+  ,mUpdatingActors(false)
 {
-  mWindow = nullptr;
-  mIsRunning = true;
 }
 
 bool Game::Initialize()
 {
-  int sdlResult = SDL_Init(SDL_INIT_VIDEO);
+  int sdlResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
   if (sdlResult != 0)
   {
@@ -73,15 +77,19 @@ bool Game::Initialize()
   mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (!mRenderer)
   {
-    SDL_Log("Failed to create window: %s", SDL_GetError());
+    SDL_Log("Failed to create renderer: %s", SDL_GetError());
   }
 
   // SDL_Image initialization
-  IMG_Init(IMG_INIT_PNG);
+  if (IMG_Init(IMG_INIT_PNG) == 0)
+  {
+    SDL_Log("Unable to initialize SDL_image: %s", SDL_GetError());
+    return false;
+  }
 
+  LoadData();
 
-  mTicksCount = 0;
-  mIsRunning = true;
+  mTicksCount = SDL_GetTicks();
 
   return true;
 }
@@ -115,6 +123,58 @@ void Game::RemoveActor(Actor *actor)
     std::iter_swap(iter, mActors.end() - 1);
     mActors.pop_back();
   }
+}
+
+bool Game::GetUpdatingActors() const
+{
+  return mUpdatingActors;
+}
+
+void Game::SetUpdatingActors(bool value)
+{
+  mUpdatingActors = value;
+}
+
+void Game::RunLoop()
+{
+  while (mIsRunning)
+  {
+    ProcessInput();
+    UpdateGame();
+    GenerateOutput();
+  }
+}
+
+void Game::Shutdown()
+{
+  UnloadData();
+  IMG_Quit();
+  SDL_DestroyRenderer(mRenderer);
+  SDL_DestroyWindow(mWindow);
+  SDL_Quit();
+}
+
+void Game::ProcessInput()
+{
+  SDL_Event event;
+  while (SDL_PollEvent(&event))
+  {
+    switch (event.type)
+    {
+      case SDL_QUIT:
+        mIsRunning = false;
+        break;
+    }
+  }
+
+  const Uint8* state = SDL_GetKeyboardState(NULL);
+  if(state[SDL_SCANCODE_ESCAPE])
+  {
+    mIsRunning = false;
+  }
+
+  // Process ship input
+  mShip->ProcessKeyboard(state);
 }
 
 void Game::UpdateGame()
@@ -161,51 +221,6 @@ void Game::UpdateGame()
   for (auto actor : deadActors)
   {
     delete actor;
-  }
-}
-
-bool Game::GetUpdatingActors() const
-{
-  return mUpdatingActors;
-}
-
-void Game::SetUpdatingActors(bool value)
-{
-  mUpdatingActors = value;
-}
-
-void Game::RunLoop()
-{
-  while (mIsRunning)
-  {
-    ProcessInput();
-    UpdateGame();
-    GenerateOutput();
-  }
-}
-
-void Game::Shutdown()
-{
-
-}
-
-void Game::ProcessInput()
-{
-  SDL_Event event;
-  while (SDL_PollEvent(&event))
-  {
-    switch (event.type)
-    {
-      case SDL_QUIT:
-        mIsRunning = false;
-        break;
-    }
-  }
-
-  const Uint8* state = SDL_GetKeyboardState(NULL);
-  if(state[SDL_SCANCODE_ESCAPE])
-  {
-    mIsRunning = false;
   }
 }
 
@@ -258,6 +273,53 @@ SDL_Texture *Game::GetTexture(const std::string &fileName)
   }
 
   return texture;
+}
+
+void Game::LoadData()
+{
+  // Create player's ship
+  mShip = new Ship(this);
+  mShip->SetPosition(Vector2(100.0f, 384.0f));
+  mShip->SetScale(1.5f);
+
+  // Create Actor for the background
+  Actor *temp = new Actor(this);
+  temp->SetPosition(Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2));
+  // Create the "far back" background
+  BGSpriteComponent* bg = new BGSpriteComponent(temp);
+  bg->SetScreenSize(Vector2(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT)));
+  std::vector<SDL_Texture*> bgtexs = {
+    GetTexture("../src/Assets/Farback01.png"),
+    GetTexture("../src/Assets/Farback02.png")
+  };
+  bg->SetBGTextures(bgtexs);
+  bg->SetScrollSpeed(-100.0f);
+  // Create the closer background
+  bg = new BGSpriteComponent(temp, 50);
+  bg->SetScreenSize(Vector2(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT)));
+  bgtexs = {
+    GetTexture("../src/Assets/Stars.png"),
+    GetTexture("../src/Assets/Stars.png")
+  };
+  bg->SetBGTextures(bgtexs);
+  bg->SetScrollSpeed(-200.0f);
+}
+
+void Game::UnloadData()
+{
+  // Delete actors
+  // Because ~Actor calls RemoveActor so we need to use a different style loop because iter will be re-defined
+  while (~mActors.empty())
+  {
+    delete mActors.back();
+  }
+
+  // Destroy textures
+  for (auto i : mTextures)
+  {
+    SDL_DestroyTexture(i.second);
+  }
+  mTextures.clear();
 }
 
 void Game::AddSprite(SpriteComponent *sprite)
