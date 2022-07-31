@@ -35,6 +35,7 @@
 #ifndef LEARD_SDL_CHAPTER_2_ANIMSPRITECOMPONENT_H
 #define LEARD_SDL_CHAPTER_2_ANIMSPRITECOMPONENT_H
 
+#include <unordered_map>
 #include "SpriteComponent.h"
 
 class AnimSpriteComponent : public SpriteComponent
@@ -45,16 +46,33 @@ public:
   // Update animation each frame (overriden from component)
   void Update(float deltaTime) override;
 
-  // Set the texture used for animation
-  void SetAnimTextures(const std::vector<SDL_Texture*>& textures);
+  // Set animation given a vector of textures
+  void SetAnimation(const std::vector<SDL_Texture*>& textures, const std::string& animationName, float animFPS,
+                    bool isLooping);
 
   // Set/Get the animation FPS
   float GetAnimFPS() const { return mAnimFPS; }
   void SetAnimFPS(float fps) { mAnimFPS = fps; }
 
 private:
-  // All textures in the animation
+  // A vector that stores all the textures in animations
   std::vector<SDL_Texture*> mAnimTextures;
+
+  // AnimInfo that stores information about a particular animation. This helps us play the information from the
+  // mAnimTextures given the start and end index and its fps.
+  struct AnimInfo
+  {
+    int startIndex;
+    int endIndex;
+    float currentFrame;
+    float animFPS;
+    bool isLooping;
+  };
+
+  // HashMap to define each animation in terms of its enum name and an index range from mAnimTextures to use
+  // in animation
+  std::unordered_map<std::string, struct AnimInfo> mAnimations;
+
   // Current frame displayed
   float mCurrentFrame;
   // Animation frame rate

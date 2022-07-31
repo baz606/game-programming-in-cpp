@@ -49,8 +49,7 @@ Ship::Ship(Game *game)
     game->GetTexture("../src/Assets/Ship03.png"),
     game->GetTexture("../src/Assets/Ship04.png")
   };
-  asc->SetAnimTextures(anims);
-  asc->SetAnimFPS(15);
+  asc->SetAnimation(anims,"ShipAnimation", 15, true);
 }
 
 

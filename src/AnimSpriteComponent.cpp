@@ -33,6 +33,9 @@
  */
 
 #include "AnimSpriteComponent.h"
+#include <iostream>
+
+#define LOG(x) std::cout << x << std::endl
 
 AnimSpriteComponent::AnimSpriteComponent(Actor *owner, int drawOrder)
   :SpriteComponent(owner, drawOrder)
@@ -45,29 +48,54 @@ void AnimSpriteComponent::Update(float deltaTime)
 {
   SpriteComponent::Update(deltaTime);
 
-  if (mAnimTextures.size() > 0)
+  // Loop through each mAnimations and update its current frame to draw
+  for (auto& anim: mAnimations)
   {
-    // Update the current frame based on frame rate and delta time
-    mCurrentFrame += mAnimFPS * deltaTime;
+    const int startingIndex = anim.second.startIndex;
+    const int endingIndex = anim.second.endIndex;
+    const int animationSize = endingIndex - startingIndex + 1;
 
-    // Wrap current frame if needed
-    while (mCurrentFrame >= mAnimTextures.size())
+    // Update the current frame based on frame rate and delta time
+    anim.second.currentFrame += anim.second.animFPS * deltaTime;
+
+    // Wrap current frame for now
+    // TODO: Add functionality whether to loop over the animation or not
+    while (anim.second.currentFrame >= animationSize)
     {
-      mCurrentFrame -= mAnimTextures.size();
+      anim.second.currentFrame -= animationSize;
     }
 
-    // Set the current texture
-    SetTexture(mAnimTextures[static_cast<int>(mCurrentFrame)]);
+    // Set the current texture to the Sprite Component parent class
+    SetTexture(mAnimTextures[anim.second.currentFrame]);
   }
 }
 
-void AnimSpriteComponent::SetAnimTextures(const std::vector<SDL_Texture *>& textures)
+void AnimSpriteComponent::SetAnimation(const std::vector<SDL_Texture *>& textures, const std::string& animationName,
+                                       float animFPS, bool isLooping)
 {
-  mAnimTextures = textures;
-  if (mAnimTextures.size() > 0)
+  AnimInfo animInfo{};
+
+  if (mAnimations.empty() && mAnimTextures.empty())
   {
-    // Set the active texture to first frame
-    mCurrentFrame = 0.0f;
-    SetTexture(mAnimTextures[0]);
+    mAnimTextures = textures;
+    animInfo.startIndex = 0;
+    animInfo.currentFrame = animInfo.startIndex;
+    animInfo.endIndex = mAnimTextures.size() - 1;  // Last texture's position
+    animInfo.isLooping = isLooping;
+    animInfo.animFPS = animFPS;
+
+    mAnimations.emplace(animationName.c_str(), animInfo);
+    SetTexture(mAnimTextures[animInfo.startIndex]);
+  }
+  else
+  {
+    animInfo.startIndex = mAnimTextures.size();  // This is the index of the texture after the last one
+    animInfo.currentFrame = animInfo.startIndex;
+    animInfo.isLooping = isLooping;
+    animInfo.animFPS = animFPS;
+    mAnimTextures.insert(mAnimTextures.end(), textures.begin(), textures.end());
+    animInfo.endIndex = mAnimTextures.size() - 1;
+
+    mAnimations.emplace(animationName.c_str(), animInfo);
   }
 }
